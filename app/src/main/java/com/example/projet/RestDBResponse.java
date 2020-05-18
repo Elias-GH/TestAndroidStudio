@@ -4,15 +4,19 @@ import java.util.List;
 
 public class RestDBResponse {
 
-    private List<PersonnageDB> name;
+    private Integer count;
+    private String next;
+    private List<PersonnageDB> results;
 
-    public RestDBResponse(List<PersonnageDB> name) {
-        this.name = name;
+    public Integer getCount() {
+        return count;
     }
 
+    public String getNext() {
+        return next;
+    }
 
     public List<PersonnageDB> getResults() {
-
-        return name;
+        return results;
     }
 }

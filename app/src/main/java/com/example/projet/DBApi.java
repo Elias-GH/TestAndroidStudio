@@ -5,8 +5,7 @@ import retrofit2.http.GET;
 
 public interface DBApi {
 
-    @GET("dbapi.json")
+    @GET("/api/v2/pokemon/")
     Call<RestDBResponse> getDBResponse();
-
 
 }

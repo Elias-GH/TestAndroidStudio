@@ -16,6 +16,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,28 +34,17 @@ public class MainActivity extends Activity {
     private ListAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private SharedPreferences sharedPreferences;
-    private Gson gson;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-     //   Log.d("Elias", "ça marche");
-       sharedPreferences = getSharedPreferences("application_esiea", Context.MODE_PRIVATE);
-         gson = new GsonBuilder()
-                .setLenient()
-                .create();
 
-         List<PersonnageDB> DBList = getDataFromCache();
-         if(DBList != null) {
-            showList(DBList);
-         }
-        else
-         {
-            makeApiCall();
-            }
+        showList();
+        makeApiCall();
     }
 
-    private List<PersonnageDB> getDataFromCache() {
+   /*private List<PersonnageDB> getDataFromCache() {
+
        String JsonPersonnageDB = sharedPreferences.getString("cle_string", null);
        if(JsonPersonnageDB == null)
        {
@@ -64,30 +54,33 @@ public class MainActivity extends Activity {
            }.getType();
            return gson.fromJson(JsonPersonnageDB, listType);
        }
-    }
+    } */
 
-    private void showList(List<PersonnageDB> DBList) {
+    private void showList() {
 
-        setContentView(R.layout.activity_main);
-       // recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView = (RecyclerView) findViewById(recycler_view);
-        // use this setting to
-        // improve performance if you know that changes
-        // in content do not change the layout size
-        // of the
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        // use a lineaRecyclerViewr layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        // define an adapter
-        mAdapter = new ListAdapter(DBList);
+        List<String> input = new ArrayList<>();
+        for(int i =0; i < 100; i++) {
+
+            input.add("Test"+i);
+        }
+
+        mAdapter = new ListAdapter(input);
         recyclerView.setAdapter(mAdapter);
     }
 
-    private static final String BASE_URL = "https://raw.githubusercontent.com/Elias-GH/TestAndroidStudio/master/";
+    private static final String BASE_URL = "https://pokeapi.co/";
 
     private void makeApiCall() {
+
+      Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -100,27 +93,27 @@ public class MainActivity extends Activity {
         call.enqueue(new Callback<RestDBResponse>() {
             @Override
             public void onResponse(Call<RestDBResponse> call, Response<RestDBResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body().getResults() != null ) {
                     List<PersonnageDB> personnageDBList = response.body().getResults();
-                   // Toast.makeText(getApplicationContext(), "API Success", Toast.LENGTH_SHORT).show();
-                    saveList(personnageDBList);
-                    showList(personnageDBList);
+                   Toast.makeText(getApplicationContext(), "API Success", Toast.LENGTH_SHORT).show();
+                   //saveList(personnageDBList);
+               //     showList(personnageDBList);
                 } else {
                     showError();
                 }
             }
-
+/*
             private void saveList(List<PersonnageDB> personnageDBList) {
 
                 String jsonString = gson.toJson(personnageDBList);
                 sharedPreferences
                         .edit()
-                        .putString("cle_string", "monString")
+                        .putString("xcle_string", "monString")
                         .apply();
 
                 Toast.makeText(getApplicationContext(), "List saved", Toast.LENGTH_SHORT).show();
             }
-
+*/
             @Override
             public void onFailure(Call<RestDBResponse> call, Throwable t) {
 
@@ -132,4 +125,6 @@ public class MainActivity extends Activity {
             Toast.makeText(getApplicationContext(), "API ERROR", Toast.LENGTH_SHORT).show();
 
         }
+
+
     }
