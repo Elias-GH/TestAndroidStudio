@@ -34,53 +34,62 @@ public class MainActivity extends Activity {
     private ListAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private SharedPreferences sharedPreferences;
+    private Gson gson;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        showList();
-        makeApiCall();
-    }
+        sharedPreferences=  getSharedPreferences("application_esiea", Context.MODE_PRIVATE);
+         gson = new GsonBuilder().setLenient().create();
 
-   /*private List<PersonnageDB> getDataFromCache() {
+         List<PersonnageDB> DBList = getDataFromCache();
 
-       String JsonPersonnageDB = sharedPreferences.getString("cle_string", null);
-       if(JsonPersonnageDB == null)
-       {
-           return null;
-       } else {
-           Type listType = new TypeToken<List<PersonnageDB>>() {
-           }.getType();
-           return gson.fromJson(JsonPersonnageDB, listType);
-       }
-    } */
+         if(DBList != null) {
+             showList(DBList);
+         }
+         else {
+             makeApiCall();
+         }
 
-    private void showList() {
+}
 
-
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        List<String> input = new ArrayList<>();
-        for(int i =0; i < 100; i++) {
-
-            input.add("Test"+i);
+    private List<PersonnageDB> getDataFromCache() {
+        String JsonPersonnageDB = sharedPreferences.getString("jsonPokemonList", null);
+        if(JsonPersonnageDB == null)
+        {
+            return null;
+        } else {
+            Type listType = new TypeToken<List<PersonnageDB>>() {
+            }.getType();
+            return gson.fromJson(JsonPersonnageDB, listType);
         }
-
-        mAdapter = new ListAdapter(input);
-        recyclerView.setAdapter(mAdapter);
     }
+
+        private void showList(List<PersonnageDB> DBList) {
+
+            setContentView(R.layout.activity_main);
+            // recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+            recyclerView = (RecyclerView) findViewById(recycler_view);
+            // use this setting to
+            // improve performance if you know that changes
+            // in content do not change the layout size
+            // of the
+            recyclerView.setHasFixedSize(true);
+            // use a lineaRecyclerViewr layout manager
+            layoutManager = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(layoutManager);
+
+            // define an adapter
+            mAdapter = new ListAdapter(DBList);
+            recyclerView.setAdapter(mAdapter);
+        }
 
     private static final String BASE_URL = "https://pokeapi.co/";
 
     private void makeApiCall() {
 
-      Gson gson = new GsonBuilder()
-                .setLenient()
-                .create();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -96,24 +105,24 @@ public class MainActivity extends Activity {
                 if (response.isSuccessful() && response.body().getResults() != null ) {
                     List<PersonnageDB> personnageDBList = response.body().getResults();
                    Toast.makeText(getApplicationContext(), "API Success", Toast.LENGTH_SHORT).show();
-                   //saveList(personnageDBList);
-               //     showList(personnageDBList);
+                   saveList(personnageDBList);
+                   showList(personnageDBList);
                 } else {
                     showError();
                 }
             }
-/*
+
             private void saveList(List<PersonnageDB> personnageDBList) {
 
                 String jsonString = gson.toJson(personnageDBList);
                 sharedPreferences
                         .edit()
-                        .putString("xcle_string", "monString")
+                        .putString("jsonPokemonList", jsonString)
                         .apply();
 
                 Toast.makeText(getApplicationContext(), "List saved", Toast.LENGTH_SHORT).show();
             }
-*/
+
             @Override
             public void onFailure(Call<RestDBResponse> call, Throwable t) {
 
