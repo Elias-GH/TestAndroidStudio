@@ -19,6 +19,14 @@ La liste des fonctionnalités réalisés dans ce projet sont :
 -L'ajout d'un bouton lié à la barre de recherche
 -Une notification qui se déclenche lors d'un appui sur le bouton
 
+<b> Pré-requis : </b>
+
+-Android Studio
+-Récupérer la branche Projet
+
+https://github.com/Elias-GH/TestAndroidStudio.git
+
+
 <b>Screenshot des fonctionnalités :</b>
 
 <img src="img/écran.png" alt="ecranh">
