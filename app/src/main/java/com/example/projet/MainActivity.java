@@ -1,5 +1,7 @@
 package com.example.projet;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +10,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import android.view.View;
+import android.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,9 +20,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -36,53 +38,61 @@ public class MainActivity extends Activity {
     private SharedPreferences sharedPreferences;
     private Gson gson;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         sharedPreferences=  getSharedPreferences("application_esiea", Context.MODE_PRIVATE);
          gson = new GsonBuilder().setLenient().create();
 
-         List<PersonnageDB> DBList = getDataFromCache();
+         List<Pokemon> PokemonList = getDataFromCache();
 
-         if(DBList != null) {
-             showList(DBList);
+         if(PokemonList != null) {
+             showList(PokemonList);
          }
          else {
              makeApiCall();
          }
 
+
+
 }
 
-    private List<PersonnageDB> getDataFromCache() {
-        String JsonPersonnageDB = sharedPreferences.getString("jsonPokemonList", null);
-        if(JsonPersonnageDB == null)
+    public void showNotification(View view){
+
+
+        NotificationManager notif = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification notify = new Notification.Builder(getApplicationContext()).setContentTitle("Projet ESIEA").setContentText("La recherche de Pokemon n'a pas encore été implémenté").setSmallIcon(R.drawable.ic_launcher_foreground).build();
+        notify.flags |= Notification.FLAG_AUTO_CANCEL;
+        notif.notify(0,notify);
+        
+    }
+
+    private List<Pokemon> getDataFromCache() {
+        String JsonPokemon = sharedPreferences.getString("jsonPokemonList", null);
+        if(JsonPokemon == null)
         {
             return null;
         } else {
-            Type listType = new TypeToken<List<PersonnageDB>>() {
+            Type listType = new TypeToken<List<Pokemon>>() {
             }.getType();
-            return gson.fromJson(JsonPersonnageDB, listType);
+            return gson.fromJson(JsonPokemon, listType);
         }
     }
 
-        private void showList(List<PersonnageDB> DBList) {
+        private void showList(List<Pokemon> PokemonList) {
 
             setContentView(R.layout.activity_main);
-            // recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
             recyclerView = (RecyclerView) findViewById(recycler_view);
-            // use this setting to
-            // improve performance if you know that changes
-            // in content do not change the layout size
-            // of the
+
             recyclerView.setHasFixedSize(true);
-            // use a lineaRecyclerViewr layout manager
             layoutManager = new LinearLayoutManager(this);
             recyclerView.setLayoutManager(layoutManager);
 
-            // define an adapter
-            mAdapter = new ListAdapter(DBList);
+            mAdapter = new ListAdapter(PokemonList);
             recyclerView.setAdapter(mAdapter);
         }
 
@@ -96,25 +106,25 @@ public class MainActivity extends Activity {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        DBApi animeAPI = retrofit.create(DBApi.class);
+        PokemonAPI pokeAPI = retrofit.create(PokemonAPI.class);
 
-        Call<RestDBResponse> call = animeAPI.getDBResponse();
-        call.enqueue(new Callback<RestDBResponse>() {
+        Call<RestPokemonResponse> call = pokeAPI.getPokemonResponse();
+        call.enqueue(new Callback<RestPokemonResponse>() {
             @Override
-            public void onResponse(Call<RestDBResponse> call, Response<RestDBResponse> response) {
+            public void onResponse(Call<RestPokemonResponse> call, Response<RestPokemonResponse> response) {
                 if (response.isSuccessful() && response.body().getResults() != null ) {
-                    List<PersonnageDB> personnageDBList = response.body().getResults();
+                    List<Pokemon> pokemonList = response.body().getResults();
                    Toast.makeText(getApplicationContext(), "API Success", Toast.LENGTH_SHORT).show();
-                   saveList(personnageDBList);
-                   showList(personnageDBList);
+                   saveList(pokemonList);
+                   showList(pokemonList);
                 } else {
                     showError();
                 }
             }
 
-            private void saveList(List<PersonnageDB> personnageDBList) {
+            private void saveList(List<Pokemon> pokemonList) {
 
-                String jsonString = gson.toJson(personnageDBList);
+                String jsonString = gson.toJson(pokemonList);
                 sharedPreferences
                         .edit()
                         .putString("jsonPokemonList", jsonString)
@@ -124,7 +134,7 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void onFailure(Call<RestDBResponse> call, Throwable t) {
+            public void onFailure(Call<RestPokemonResponse> call, Throwable t) {
 
                 showError();
             }
@@ -136,4 +146,4 @@ public class MainActivity extends Activity {
         }
 
 
-    }
+}

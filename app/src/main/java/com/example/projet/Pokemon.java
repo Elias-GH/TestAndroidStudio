@@ -1,6 +1,6 @@
 package com.example.projet;
 
-public class PersonnageDB {
+public class Pokemon {
 
     private String name;
     private String url;

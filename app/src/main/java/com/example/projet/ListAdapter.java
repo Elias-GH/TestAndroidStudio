@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
-    private List<PersonnageDB> values;
+    private List<Pokemon> values;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -30,7 +30,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         }
     }
 
-    public void add(int position, PersonnageDB item) {
+    public void add(int position, Pokemon item) {
         values.add(position, item);
         notifyItemInserted(position);
     }
@@ -41,7 +41,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public ListAdapter(List<PersonnageDB> myDataset) {
+    public ListAdapter(List<Pokemon> myDataset) {
         values = myDataset;
     }
 
@@ -64,7 +64,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        final PersonnageDB currentDBCharacter = values.get(position);
+        final Pokemon currentDBCharacter = values.get(position);
         holder.txtHeader.setText(currentDBCharacter.getName());
         holder.txtHeader.setOnClickListener(new OnClickListener() {
             @Override

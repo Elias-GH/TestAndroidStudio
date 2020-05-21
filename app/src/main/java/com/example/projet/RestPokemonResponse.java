@@ -2,11 +2,11 @@ package com.example.projet;
 
 import java.util.List;
 
-public class RestDBResponse {
+public class RestPokemonResponse {
 
     private Integer count;
     private String next;
-    private List<PersonnageDB> results;
+    private List<Pokemon> results;
 
     public Integer getCount() {
         return count;
@@ -16,7 +16,7 @@ public class RestDBResponse {
         return next;
     }
 
-    public List<PersonnageDB> getResults() {
+    public List<Pokemon> getResults() {
         return results;
     }
 }
